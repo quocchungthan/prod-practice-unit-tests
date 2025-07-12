@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  application:
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/application:${VERSION:-latest}
+    environment:
+      - APP_ADDRESS=${APP_ADDRESS}
+      - MAX_FILE_SIZE_KB=${MAX_FILE_SIZE_KB}
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - bff
+    restart: unless-stopped
+
+  bff:
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/bff:${VERSION:-latest}
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - STORAGE_ROOT=/temp/storage
+      - DOCKER=true
+      - MAX_FILE_SIZE_KB=${MAX_FILE_SIZE_KB}
+    volumes:
+      - ./storage:/temp/storage
+    restart: unless-stopped
+
+  pdf2markdown:
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/pdf2markdown:${VERSION:-latest}
+    environment:
+      - STORAGE_ROOT=/temp/storage
+    volumes:
+      - ./storage:/temp/storage
+    restart: unless-stopped 
+
+  translationservice:
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/translationservice:${VERSION:-latest}
+    environment:
+      - STORAGE_ROOT=/temp/storage
+      - OPENAI_APIKEY=${OPENAI_APIKEY}
+      - OPENAI_PROJ_ID=${OPENAI_PROJ_ID}
+      - OPENAI_ORG_ID=${OPENAI_ORG_ID}
+      - OPENAI_MODEL_NAME=${OPENAI_MODEL_NAME}  
+    volumes:
+      - ./storage:/temp/storage
+    restart: unless-stopped
+
+  reconstructionservice:
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/reconstructionservice:${VERSION:-latest}
+    environment:
+      - STORAGE_ROOT=/temp/storage
+    volumes:
+      - ./storage:/temp/storage
+    restart: unless-stopped
+
+  emailservice:
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/emailservice:${VERSION:-latest}
+    environment:
+      - STORAGE_ROOT=/temp/storage
+      - GMAIL_USER=${GMAIL_USER}
+      - GMAIL_PASS=${GMAIL_PASS}
+      - FRONTEND_URL=http://${APP_ADDRESS}
+    volumes:
+      - ./storage:/temp/storage
+    restart: unless-stopped 
+
+  contentbreakdown:
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/contentbreakdown:${VERSION:-latest}
+    environment:
+      - STORAGE_ROOT=/temp/storage
+    volumes:
+      - ./storage:/temp/storage
+    restart: unless-stopped
+
+  composingservice:
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/composingservice:${VERSION:-latest}
+    environment:
+      - STORAGE_ROOT=/temp/storage
+      - SLEEP_INTERVAL=10
+      - DEFAULT_COMPOSER=simple_markdown
+    volumes:
+      - ./storage:/temp/storage
+    restart: unless-stopped 
