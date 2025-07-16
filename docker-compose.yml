@@ -15,8 +15,6 @@ services:
 
   bff:
     image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/bff:${VERSION:-latest}
-    ports:
-      - "3001:3001"
     environment:
       - NODE_ENV=production
       - PORT=3001
