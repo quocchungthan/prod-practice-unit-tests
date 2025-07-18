@@ -21,6 +21,7 @@ services:
       - STORAGE_ROOT=/temp/storage
       - DOCKER=true
       - MAX_FILE_SIZE_KB=${MAX_FILE_SIZE_KB}
+      - STATISTICS_PASSWORD=${STATISTICS_PASSWORD}
     volumes:
       - ./storage:/temp/storage
     restart: unless-stopped
