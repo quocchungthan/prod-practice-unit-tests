@@ -42,6 +42,7 @@ services:
       - OPENAI_PROJ_ID=${OPENAI_PROJ_ID}
       - OPENAI_ORG_ID=${OPENAI_ORG_ID}
       - OPENAI_MODEL_NAME=${OPENAI_MODEL_NAME}  
+      - LIMIT_SENTENCE_PER_FREE_REQUEST=${LIMIT_SENTENCE_PER_FREE_REQUEST}
     volumes:
       - ./storage:/temp/storage
     restart: unless-stopped
