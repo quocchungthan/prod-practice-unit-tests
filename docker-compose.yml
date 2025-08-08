@@ -26,6 +26,10 @@ services:
       - ./storage:/temp/storage
     restart: unless-stopped
 
+  translator_en_vi:
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/translator-en-vi:latest
+    restart: unless-stopped
+
   pdf2markdown:
     image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/pdf2markdown:${VERSION:-latest}
     environment:
@@ -45,6 +49,7 @@ services:
       - LIMIT_SENTENCE_PER_FREE_REQUEST=${LIMIT_SENTENCE_PER_FREE_REQUEST}
       - TRANSLATION_MODE=${TRANSLATION_MODE}
       - DEFAULT_BATCH_SIZE=${DEFAULT_BATCH_SIZE}
+      - TRANSLATOR_EN_VI_ENDPOINT="http://translator_en_vi:1800"
     volumes:
       - ./storage:/temp/storage
     restart: unless-stopped
